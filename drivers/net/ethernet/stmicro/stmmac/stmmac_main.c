@@ -3250,11 +3250,6 @@ static int stmmac_init_dma_engine(struct stmmac_priv *priv)
 	u32 chan = 0;
 	int ret = 0;
 
-	if (!priv->plat->dma_cfg || !priv->plat->dma_cfg->pbl) {
-		netdev_err(priv->dev, "Invalid DMA configuration\n");
-		return -EINVAL;
-	}
-
 	ret = stmmac_prereset_configure(priv);
 	if (ret)
 		return ret;
@@ -7767,6 +7762,11 @@ static int __stmmac_dvr_probe(struct device *device,
 	const char *devname = of_get_property(device->of_node, "label", NULL);
 	u32 rxq;
 	int i, ret = 0;
+
+	if (!plat_dat->dma_cfg || !plat_dat->dma_cfg->pbl) {
+		dev_err(device, "invalid DMA configuration\n");
+		return -EINVAL;
+	}
 
 	ndev = devm_alloc_etherdev_mqs(device, sizeof(struct stmmac_priv),
 				       MTL_MAX_TX_QUEUES, MTL_MAX_RX_QUEUES);
