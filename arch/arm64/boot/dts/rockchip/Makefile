@@ -64,6 +64,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-crrc.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-dg3399.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-dlfr100.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-eaidk-610.dtb
+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-emb3531.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-evb.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-evb-ind.dtb
 dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-fmx1-pro-b.dtb
