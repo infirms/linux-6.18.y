@@ -146,6 +146,19 @@
 		regulator-boot-on;
 	};
 
+	wifi_reg_on: regulator-wifi {
+		compatible = "regulator-fixed";
+		regulator-name = "WL_REG_ON";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		vin-supply = <&vddao_3v3>;
+
+		gpio = <&gpio GPIOX_6 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		off-on-delay-us = <500000>;
+		startup-delay-us = <500000>;
+	};
+
 	led-controller {
 		compatible = "gpio-leds";
 
@@ -344,8 +357,15 @@
 
 	bluetooth {
 		compatible = "realtek,rtl8822cs-bt";
-		enable-gpios = <&gpio GPIOX_18 GPIO_ACTIVE_HIGH>;
+		interrupt-parent = <&gpio_intc>;
+		interrupts = <IRQID_GPIOX_18 IRQ_TYPE_LEVEL_HIGH>;
+		interrupt-names = "host-wakeup";
+		enable-gpios = <&gpio GPIOX_17 GPIO_ACTIVE_HIGH>;
 		max-speed = <1500000>;
+		clocks = <&wifi32k>;
+		clock-names = "lpo";
+		vbat-supply = <&vddao_3v3>;
+		vddio-supply = <&vddio_ao1v8>;
 	};
 };
 
@@ -362,10 +382,7 @@
 };
 
 &sdio_pwrseq {
-	/* RTL8822BS WL_REG_ON: low resets/disables, high enables the module. */
-	reset-gpios = <&gpio GPIOX_7 GPIO_ACTIVE_LOW>;
-	post-power-on-delay-ms = <200>;
-	power-off-delay-us = <200000>;
+	/delete-property/ reset-gpios;
 };
 
 &sdio_pins {
@@ -377,17 +394,12 @@
 
 /* SDIO */
 &sd_emmc_a {
-	/*
-	 * CMD52 works, while every data-bearing CMD53 times out on the
-	 * descriptor-chain path. Use the controller SRAM bounce buffer.
-	 */
-	amlogic,dram-access-quirk;
 	/delete-property/ sd-uhs-sdr104;
 	max-frequency = <50000000>;
-	cap-sdio-irq;
-	no-mmc;
-	no-sd;
+	vmmc-supply = <&wifi_reg_on>;
 	sd-uhs-sdr12;
 	sd-uhs-sdr25;
 	sd-uhs-sdr50;
+	cap-sdio-irq;
+	full-pwr-cycle;
 };
