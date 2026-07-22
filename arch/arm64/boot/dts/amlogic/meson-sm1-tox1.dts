@@ -146,6 +146,18 @@
 		regulator-boot-on;
 	};
 
+	wifi_reg_on: regulator-wifi {
+		compatible = "regulator-fixed";
+		regulator-name = "WL_REG_ON";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		vin-supply = <&vddao_3v3>;
+		gpio = <&gpio GPIOX_7 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		off-on-delay-us = <500000>;
+		startup-delay-us = <500000>;
+	};
+
 	led-controller {
 		compatible = "gpio-leds";
 
@@ -362,10 +374,7 @@
 };
 
 &sdio_pwrseq {
-	/* TOX1 Wi-Fi power-enable; the shared AC2xx default is GPIOX_6. */
-	reset-gpios = <&gpio GPIOX_7 GPIO_ACTIVE_LOW>;
-	post-power-on-delay-ms = <200>;
-	power-off-delay-us = <10000>;
+	/delete-property/ reset-gpios;
 };
 
 &sdio_pins {
@@ -379,7 +388,9 @@
 &sd_emmc_a {
 	/delete-property/ sd-uhs-sdr104;
 	max-frequency = <50000000>;
-	cap-power-off-card;
+	vmmc-supply = <&wifi_reg_on>;
+	no-mmc;
+	no-sd;
 	sd-uhs-sdr12;
 	sd-uhs-sdr25;
 	sd-uhs-sdr50;
